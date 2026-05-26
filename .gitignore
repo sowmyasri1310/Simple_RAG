@@ -30,3 +30,6 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Simple Vector DB
+simple_vectordb.json
