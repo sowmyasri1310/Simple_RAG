@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from groq import Groq
 from utils.prompts import RAG_PROMPT_TEMPLATE
 
@@ -15,11 +16,23 @@ DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
 def get_groq_client() -> Groq:
     """
-    Initializes the Groq client using the API key from environment variables.
+    Initializes the Groq client using the API key from Streamlit secrets or environment variables.
     """
-    api_key = os.getenv("GROQ_API_KEY")
+    api_key = None
+    
+    # Try Streamlit Secrets first
+    try:
+        api_key = st.secrets.get("GROQ_API_KEY")
+    except Exception:
+        pass
+        
+    # Fallback to local environment variable
     if not api_key:
-        raise ValueError("GROQ_API_KEY environment variable is not set. Please add it to your .env file.")
+        api_key = os.getenv("GROQ_API_KEY")
+        
+    if not api_key:
+        raise ValueError("GROQ_API_KEY is not set. Please add it to Streamlit Secrets or your local .env file.")
+        
     return Groq(api_key=api_key)
 
 def generate_rag_answer(
